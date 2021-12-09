@@ -2,11 +2,29 @@ import React, { useEffect, useState } from 'react'
 import { Typography, Table, DatePicker, Row, Col, Button } from 'antd'
 import json from './../../json/static.json'
 import dayjs from 'dayjs'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetch_sur } from './../../Redux/actions/sur_hour.action'
+import { openModal } from '../../Redux/actions/modal.action'
+import SurchargeForm from './SurchargeForm'
 
 const { Title } = Typography
 const SurchargeHoursTable = () => {
   const [tabledata, setTableData] = useState([])
-  const [selectDate, setSelectDate] = useState(null)
+
+  const [date, setDate] = useState()
+  const timeData = useSelector((state) => state.sur.sur_hour)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetch_sur(date))
+  }, [date])
+
+  const onChangeDate = (dates) => {
+    if (dates) {
+      setDate(dayjs(dates).format('YYYY'))
+    } else {
+      setDate(null)
+    }
+  }
   const columns = [
     {
       title: json.sn,
@@ -27,33 +45,31 @@ const SurchargeHoursTable = () => {
 
     {
       title: json.Action,
-      dataIndex: 'action',
-      holiday: 'action',
-      render: (tags) => <Button type="dashed">{json.Edit}</Button>,
+      key: 'action',
+      render: (item) => (
+        <Button
+          onClick={() => {
+            console.log(item)
+            dispatch(openModal(<SurchargeForm item={item} />))
+          }}
+          type="dashed"
+        >
+          {json.Edit}
+        </Button>
+      ),
     },
   ]
 
-  //   useEffect(() => {
-  //     httpClients
-  //       .GET('/shift/shift-guard-dash', true, {
-  //         date: dayjs(selectDate).format('YYYY-MM-DD'),
-  //       })
-  //       .then(({ data }) => {
-  //         const outData = data?.map((item, i) => ({
-  //           key: item.id,
-  //           sn: i + 1,
-  //           shift_date: dayjs(item.shift_date).format('MMM/DD/YYYY'),
-
-  //           shift_one: item.shift_one * 8,
-  //           shift_two: item.shift_two * 8,
-  //           shift_three: item.shift_three * 8,
-
-  //           holiday: item.holiday * 8,
-  //         }))
-  //         setTableData(outData)
-  //       })
-  //       .catch((error) => {})
-  //   }, [selectDate])
+  useEffect(() => {
+    const outData = timeData?.map((item, i) => ({
+      key: item.id,
+      sn: i + 1,
+      date: dayjs(item.year).format('YYYY'),
+      surcharge_hour: item.surcharge_hour,
+      action: item,
+    }))
+    setTableData(outData)
+  }, [timeData])
 
   return (
     <>
@@ -61,13 +77,13 @@ const SurchargeHoursTable = () => {
         <Col>
           <Title level={5}>
             {json['Selected Year']}-
-            {selectDate ? dayjs(selectDate).format('YYYY') : json.All}
+            {date ? dayjs(date).format('YYYY') : json.All}
           </Title>
         </Col>
         <Col>
           <DatePicker
             onChange={(date) => {
-              setSelectDate(date)
+              onChangeDate(date)
             }}
             picker="year"
           />
@@ -76,7 +92,7 @@ const SurchargeHoursTable = () => {
 
       <Table
         columns={columns}
-        dataSource={tabledata}
+        dataSource={[...tabledata]}
         pagination={false}
         bordered
       />

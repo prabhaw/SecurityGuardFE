@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Typography, Table, DatePicker, Row, Col, Button } from 'antd'
 import json from '../../json/static.json'
 import dayjs from 'dayjs'
-
+import httpClients from '../../utils/httpClients'
+const { Column, ColumnGroup } = Table
 const { Title } = Typography
 const SalaryMonthlyTable = () => {
   const [tabledata, setTableData] = useState([])
@@ -20,22 +21,22 @@ const SalaryMonthlyTable = () => {
     },
 
     {
-      title: json['Shift One'] + '-€',
+      title: json['Shift One'],
       dataIndex: 'shift_one',
       key: 'shift_one',
     },
     {
-      title: json['Shift Two'] + '-€',
+      title: json['Shift Two'],
       dataIndex: 'shift_two',
       key: 'shift_two',
     },
     {
-      title: json['Shift Three'] + '-€',
+      title: json['Shift Three'],
       dataIndex: 'shift_three',
       key: 'shift_three',
     },
     {
-      title: json['Total'] + '-€',
+      title: json['Total'],
       dataIndex: 'total',
       key: 'total',
     },
@@ -62,7 +63,30 @@ const SalaryMonthlyTable = () => {
   //       })
   //       .catch((error) => {})
   //   }, [selectDate])
+  useEffect(() => {
+    httpClients
+      .GET('/shift/salary-month', true, {
+        date: dayjs(selectDate).format('YYYY'),
+      })
+      .then(({ data }) => {
+        const outData = data?.map((item, i) => ({
+          key: item.id,
+          sn: i + 1,
+          guard_name:
+            item.dataValues?.first_name + ' ' + item.dataValues?.last_name,
 
+          shift_one: item.shift_one,
+
+          shift_two: item.shift_two,
+
+          shift_three: item.shift_three,
+
+          total: parseInt(item.total) * 50 + 'EUR',
+        }))
+        setTableData(outData)
+      })
+      .catch((error) => {})
+  }, [selectDate])
   return (
     <>
       <Row justify="space-between" align="middle">

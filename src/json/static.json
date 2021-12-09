@@ -89,5 +89,13 @@
   "Max Surcharge Hour": "Max Surcharge Hour",
   "Salary List": "Salary List",
   "Selected Week": "Selected Week",
-  "Selected Month": "Selected Month"
+  "Selected Month": "Selected Month",
+  "Normal": "Normal",
+  "Surcharge": "Surcharge",
+  "Manage Surcharge Hours": "Manage Surcharge Hours",
+  "Update Surcharge": "Update Surcharge",
+  "Add Surcharge": "Add Surcharge",
+  "Weekly Salary List": "Weekly Salary List",
+  "Monthly Salary List": "Monthly Salary List",
+  "Yearly Salary List": "Yearly Salary List"
 }

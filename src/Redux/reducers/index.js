@@ -7,6 +7,7 @@ import guardFormReducer from './add_guard.reducer'
 import adminShift from './shift.reducer'
 import leaves from './leave.reducer'
 import holiday from './holiday.reducer'
+import SurReducer from './sur.reducer'
 
 export default combineReducers({
   user: userReducer,
@@ -17,4 +18,5 @@ export default combineReducers({
   shiftadmin: adminShift,
   leaves: leaves,
   holiday: holiday,
+  sur: SurReducer,
 })
